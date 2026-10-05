@@ -3,16 +3,23 @@ import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as WebBrowser from "expo-web-browser";
 import { createContext, useContext, useEffect, useState } from "react";
+import { API_URL } from "./config";
 import { supabase } from "./supabase";
 
 WebBrowser.maybeCompleteAuthSession();
 
 /**
- * Where Google sends you back to. In Expo Go this looks like
- * exp://192.168.1.5:8081/--/auth-callback, so Supabase needs "exp://**"
- * in its Redirect URLs.
+ * The app's own return address: exp://192.168.1.5:8081/--/auth-callback in
+ * Expo Go, rume://auth-callback in the installed app.
  */
 export const redirectTo = makeRedirectUri({ path: "auth-callback" });
+
+/**
+ * Supabase sends the login to the website's /auth/mobile page (already an
+ * approved redirect), which forwards it straight to the app address above.
+ * This avoids depending on Supabase matching exp:// or rume:// addresses.
+ */
+const bridgeUrl = `${API_URL}/auth/mobile?to=${encodeURIComponent(redirectTo)}`;
 
 type AuthState = {
   session: Session | null;
@@ -54,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Same Google provider and Supabase project as the website = same account.
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo, skipBrowserRedirect: true },
+      options: { redirectTo: bridgeUrl, skipBrowserRedirect: true },
     });
     if (error) throw error;
     const result = await WebBrowser.openAuthSessionAsync(data.url, redirectTo);
