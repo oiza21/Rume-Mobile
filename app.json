@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Rume",
+    "slug": "rume-mobile",
+    "version": "1.0.0",
+    "scheme": "rume",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": { "image": "./assets/splash-icon.png", "resizeMode": "contain", "backgroundColor": "#4B1A20" },
+    "ios": { "supportsTablet": false, "bundleIdentifier": "com.rume.shop" },
+    "android": { "package": "com.rume.shop", "adaptiveIcon": { "backgroundColor": "#4B1A20", "foregroundImage": "./assets/android-icon-foreground.png" } },
+    "plugins": ["expo-router", "expo-font", "expo-web-browser"],
+    "experiments": { "typedRoutes": false }
+  }
+}
